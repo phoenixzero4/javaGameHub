@@ -1,3 +1,1 @@
-Brodi:TETRIS:20
-Phoenix:TETRIS:0
-Gloria:TETRIS:0
+Gloria:TETRIS:72

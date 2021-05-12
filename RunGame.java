@@ -23,10 +23,8 @@ public class RunGame implements Runnable {
 	}
 
 	public RunGame(Player player) {
-		player = player;
 		this.name = player.getPlayerName();
 		System.out.println("RunGame task initiated");
-
 	}
 
 	@Override

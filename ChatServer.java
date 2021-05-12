@@ -208,6 +208,21 @@ public class ChatServer extends JFrame {
 							waitingCount = 0;
 							waitingPlayers = new Player[2];
 						}
+					} else if (input.startsWith("REPORT")) {
+
+						int delim = input.indexOf(":");
+						int delim2 = input.lastIndexOf(":");
+
+						String getPlayer = input.substring(delim + 1, delim2);
+						String scoreString = input.substring(delim2 + 1);
+
+						int score = Integer.valueOf(scoreString);
+
+						if (userMap.containsKey(getPlayer)) {
+							PrintWriter pw = userMap.get(getPlayer).getWriter();
+							pw.println("REPORT:" + score + ":" + getPlayer);
+						}
+
 					} else if (input.startsWith("DM")) {
 						int index = input.indexOf(":");
 						String name = input.substring(2, index);

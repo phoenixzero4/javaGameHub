@@ -45,7 +45,7 @@ public class GameHubGUI extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	private JPanel textPanel, inputPanel;
 	private JTextField textField;
-	private String message, name, address, line;
+	private String message, name, line;
 	private Font meiryoFont = new Font("Meiryo", Font.PLAIN, 14);
 	private Border blankBorder = BorderFactory.createEmptyBorder(10, 10, 20, 10);// top,r,b,l
 	private JList<String> list;
@@ -65,13 +65,12 @@ public class GameHubGUI extends JFrame implements ActionListener {
 	protected ObjectOutputStream objOutput;
 
 	private static Socket socket;
-	private static String serverAddress;
 	protected boolean connected = false;
 	protected static HashSet<String> currentUsers;
 
 	protected static int count = 0;
 	protected String privateName = "";
-
+	protected static String serverAddress;
 	public Player player = null;
 
 	// stylizing experiment
@@ -119,9 +118,6 @@ public class GameHubGUI extends JFrame implements ActionListener {
 		});
 
 		// -----------------------------------------
-		// remove window buttons and border frame
-		// to force user to exit on a button
-		// - one way to control the exit behaviour
 		// frame.setUndecorated(true);
 		// frame.getRootPane().setWindowDecorationStyle(JRootPane.FRAME);
 
@@ -319,7 +315,6 @@ public class GameHubGUI extends JFrame implements ActionListener {
 				sendPrivateButton.setEnabled(true);
 				sendPrivateButton.setForeground(Color.magenta);
 				sendButton.setEnabled(false);
-
 			}
 
 			if (e.getSource() == sendPrivateButton) {
@@ -327,7 +322,6 @@ public class GameHubGUI extends JFrame implements ActionListener {
 			}
 
 			if (e.getSource() == tetrisButton) {
-
 				if (player == null) {
 					player = new Player(name, out);
 					player.addHub(this);
@@ -344,7 +338,6 @@ public class GameHubGUI extends JFrame implements ActionListener {
 					@Override
 					public void windowClosing(WindowEvent we) {
 						System.out.println("Closed snake game");
-
 					}
 				});
 				System.out.println("Launching game Snake for " + name);
@@ -433,10 +426,30 @@ public class GameHubGUI extends JFrame implements ActionListener {
 			while ((line = in.readLine()) == null) {
 			}
 			;
-			// line = in.readLine();
-			System.out.println(line);
+
+			System.out.println("Client received line: " + line);
 			if (line.startsWith("MESSAGE")) {
 				textArea.append(line.substring(8) + "\n");
+
+			} else if (line.startsWith("REPORT")) {
+				int delim = line.indexOf(":");
+				int delim2 = line.lastIndexOf(":");
+				String scoreString = line.substring(delim + 1, delim2);
+				String thisName = line.substring(delim2 + 1);
+				int score = Integer.valueOf(scoreString);
+				textArea.append("You scored " + score);
+
+				int oldScore = player.getScore("TETRIS");
+				String msg = "";
+				if (oldScore < score) {
+					msg = "\nYou earned a new hi-score!";
+					msg += "\nPrevious hi-score: " + oldScore;
+					textArea.append(msg);
+					player.addScore(score, "TETRIS");
+					System.out.println("Updating highscore to " + score + " from " + oldScore);
+				} else {
+					msg = "\nPrevious Hi-score: " + oldScore;
+				}
 
 			} else if (line.startsWith("UPDATE")) {
 				String updateName = line.substring(6);
@@ -544,14 +557,14 @@ public class GameHubGUI extends JFrame implements ActionListener {
 
 			try {
 				if (connectToServer(address)) {
-					// name = getPlayerName();
 					name = name.substring(0, 1).toUpperCase() + name.substring(1);
 					if (checkName(name)) {
+
 						GameHubGUI gamehub = new GameHubGUI(name);
 						currentUsers.add(name);
 						gamehub.updateUsers(currentUsers);
-
 						gamehub.run();
+
 					} else {
 						System.err.println("Name already taken.\nTry again");
 						System.exit(1);

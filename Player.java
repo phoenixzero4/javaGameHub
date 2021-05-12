@@ -6,7 +6,6 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.HashMap;
-import java.util.Scanner;
 
 public class Player {
 
@@ -17,7 +16,6 @@ public class Player {
 
 	protected HashMap<String, Integer> gameScores;
 	protected Socket socket;
-	private Scanner input;
 	protected GameHubGUI gui;
 
 	Tetris game = null;
@@ -25,7 +23,6 @@ public class Player {
 	int score;
 
 	public Player(String name) {
-
 	}
 
 	public Player(String name, PrintWriter out) {
@@ -105,7 +102,7 @@ public class Player {
 	}
 
 	public void runSingleGame() {
-
+		game = new Tetris(this);
 		game = Tetris.getInstance(this);
 		game.setAlwaysOnTop(true);
 		game.setVisible(true);
@@ -114,8 +111,11 @@ public class Player {
 			@Override
 			public void windowClosing(WindowEvent we) {
 				score = game.findScore();
-				gameScores.put("TETRIS", score);
-				out.println("TETRIS:" + name + ":" + score);
+				addScore(score, "TETRIS");
+				// gameScores.put("TETRIS", score);
+				// out.println("TETRIS:" + name + ":" + score);
+				out.println("REPORT:" + name + ":" + score);
+				System.out.println("REPORT:" + name + ":" + score);
 
 			}
 		});
@@ -124,8 +124,12 @@ public class Player {
 			@Override
 			public void componentHidden(ComponentEvent e) {
 				score = game.findScore();
-				gameScores.put("TETRIS", score);
-				out.println("TETRIS:" + name + ":" + score);
+				addScore(score, "TETRIS");
+				// gameScores.put("TETRIS", score);
+				// out.println("TETRIS:" + name + ":" + score);
+				out.println("REPORT:" + name + ":" + score);
+				System.out.println("REPORT:" + name + ":" + score);
+
 			}
 
 			public void componentMoved(ComponentEvent e) {
@@ -153,7 +157,8 @@ public class Player {
 			@Override
 			public void windowClosing(WindowEvent we) {
 				score = game.findScore();
-				gameScores.put("TETRIS", score);
+				// gameScores.put("TETRIS", score);
+				addScore(score, "TETRIS");
 				out.println("TETRIS:" + name + ":" + score);
 				out.println("GETSCORE" + name);
 
@@ -163,7 +168,8 @@ public class Player {
 			@Override
 			public void componentHidden(ComponentEvent e) {
 				score = game.findScore();
-				gameScores.put("TETRIS", score);
+				addScore(score, "TETRIS");
+				// gameScores.put("TETRIS", score);
 				out.println("TETRIS:" + name + ":" + score);
 				out.println("GETSCORE" + name);
 
